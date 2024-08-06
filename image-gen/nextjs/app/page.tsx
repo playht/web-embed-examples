@@ -77,6 +77,7 @@ export default function Home() {
   const windowObj = typeof window !== 'undefined' ? window : undefined;
   
   useEffect(() => {
+    // @ts-ignore
     windowObj?.PlayAI?.open(webEmbedId, { events, onEvent })
   }, [windowObj])
   
@@ -84,7 +85,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <script type="text/javascript" src={scriptUrl} async></script>
      <Image src={image} alt="Generated Image" width={500} height={500} />
-     {/* <button className="bg-blue-500 text-white p-2 rounded-md" onClick={async () => generateImage('a brown dog')}>Test Fal</button> */}
+     <button className="bg-blue-500 text-white p-2 rounded-md" onClick={async () => generateImage('a brown dog')}>Test Fal</button>
     </main>
   );
 }
