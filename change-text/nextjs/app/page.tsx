@@ -12,7 +12,8 @@ const webEmbedId = "VQkN5p1ijeXxXeGrjx6ZL";
  *
  * [Agent Prompt]
  * Your only job is to change the text on the page to a given string.
- * Do not do anything else. Do not offer to do anything else. After changing the text, END THE CALL IMMEDIATELY.
+ * Do not do anything else. Do not offer to do anything else.
+ * After changing the text, END THE CALL IMMEDIATELY.
  */
 
 export default function Home() {
