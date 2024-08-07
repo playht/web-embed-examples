@@ -32,8 +32,7 @@ export default function Home() {
   ];
 
   // Define your event handler here
-  const onEvent = (e: any) => {
-    const event = JSON.parse(e?.payload ?? "{}");
+  const onEvent = (event: any) => {
     if (event.name === "change-text") {
       setText(event.parameters.text);
     }

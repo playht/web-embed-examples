@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Change Text Example",
-  description: "Change Text Example for Play.ai web embed",
+  title: "Form Filling Example",
+  description: "Form Filling Example for Play.ai web embed",
 };
 
 export default function RootLayout({
