@@ -8,22 +8,23 @@ const webEmbedId = "LWI1mKeYlokyznhg56dV-";
 
 /*
  * [Agent Greeting]
- * Hi, do you want me to help fill this form out for you?
+ * Hi, are you ready to fill out the form?
  *
  * [Agent Prompt]
  * Your only job is to help the user fill out the form.
  * Do not do anything else. Do not offer to do anything else.
- * The list of form fields is provided to you. The first thing
- * you do is list out the form fields in the form.
+ * The list of form fields is provided to you. Do not summarize
+ * the contents of the form. After filling out the entire form,
+ * END THE CALL IMMEDIATELY.
  */
 
 let globalFormValues: Record<string, { value: any }> = {};
 
 export default function Home() {
   const formFields = [
-    { key: "name", label: "Name", type: "text" },
-    { key: "age", label: "Age", type: "text" },
-    { key: "hobbies", label: "Hobbies", type: "text" },
+    { key: "name", label: "Name", type: "text", argType: "string" },
+    { key: "age", label: "Age", type: "text", argType: "number" },
+    { key: "hobbies", label: "Hobbies", type: "text", argType: "string" },
   ];
 
   const [formValues, setFormValues] =
@@ -50,30 +51,37 @@ export default function Home() {
         key: { type: "string", description: "The form field to update" },
         value: {
           type: "string",
-          description: "The value to update the form field with",
+          description:
+            "The value to update the form field with, if it's a string value",
+        },
+        numberValue: {
+          type: "number",
+          description:
+            "The value to update the form field with, if it's a number value",
         },
       },
     },
   ];
-  // const events = [
-  //   {
-  //     name: "change-text",
-  //     description:
-  //       "This function is called with a string representing the text to change to",
-  //     parameters: {
-  //       text: { type: "string", description: "The text to change to" },
-  //     },
-  //   },
-  // ];
 
-  const systemMessage = `Here is a list of form fields: name, age, hobbies. Update the form while the user is talking`;
+  const context = `Here is a list of form fields: ${formFields
+    .map((field) => `${field.key} (${field.argType})`)
+    .join(
+      ", "
+    )}. Call "update-form-field" IMMEDIATELY after the value for a form field is given.`;
 
   // Define your event handler here
   const onEvent = (event: any) => {
     if (event.name === "update-form-field") {
+      const value =
+        event.parameters.value.length > 0
+          ? event.parameters.value
+          : event.parameters.numberValue;
+
       const newFormValues = {
         ...globalFormValues,
-        [event.parameters.key]: { value: event.parameters.value },
+        [event.parameters.key]: {
+          value,
+        },
       };
       setFormValues(newFormValues);
       globalFormValues = newFormValues;
@@ -82,10 +90,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // window?.PlayAI.open(webEmbedId, { events, onEvent });
-    window?.PlayAI.open(webEmbedId, { events, onEvent, systemMessage });
-    console.log("what no way");
-    // window?.PlayAI.open(webEmbedId);
+    window?.PlayAI.open(webEmbedId, {
+      events,
+      onEvent,
+      context,
+    });
   }, [() => window]);
 
   return (
