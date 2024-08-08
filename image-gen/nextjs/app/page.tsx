@@ -2,18 +2,17 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import * as fal from "@fal-ai/serverless-client";
+interface FalResult {
+  images?: { url: string }[];
+}
 
 // configure the fal proxy, see the full documentation here: https://fal.ai/docs/integrations/nextjs
 fal.config({
   proxyUrl: "/api/fal/proxy",
 });
 
-interface FalResult {
-  images?: { url: string }[];
-}
-
 /*
- * global variable necessary for embed event handlers to access updated image as react's useState hook
+ * this global variable is necessary for embed event handlers to access the current image url as react's useState hook
  * does not point to the same object in memory when updating a state variable
  */
 let image_url = ''
@@ -38,33 +37,32 @@ export default function Home() {
   }
   
   async function modifyImage(prompt: string, previousImage: string) {
-    // call the fal api to modify the image
+    // call the fal api to modify the current image
     // we've chosen flux/dev/image-to-image as it is very fast, but feel free to choose any image to image model
     await callFalAPI("fal-ai/flux/dev/image-to-image", { prompt, image_url: previousImage });
   }
 
 /* 
   This is the list of events that the agent can trigger.
-  It is used to define the functions in the Play AI embed.
-  These events allow the agent to interact with the image generation
-  and modification capabilities of our application. 
+  These events are used to trigger the image generation and modification functions we've defined.
 */
   const events = [
     {
       name: 'generate-image',
-      description: `This function is called every time the user asks you to create or make or generate something`,
+      description: `This function creates images`,
       parameters: {
         userPrompt: { type: 'string', description: "The user's desired image" }
       },
     },
     {
       name: 'modify-image',
-      description: `This function is called every time the user asks you to change something about the current image. So if the user says something like "make it taller" or "make it green" or "add a sloth", use this tool`,
+      description: `This function modifies existing images`,
       parameters: {
         userPrompt: { type: 'string', description: "The user's desired changes" }
       },
     }
   ];
+
   // this is the event handler for the embed
   // it is called whenever the agent sends an event to the embed
   const onEvent = async (event: any) => {
@@ -78,7 +76,6 @@ export default function Home() {
         await generateImage(userPrompt);
         break;
       case 'modify-image':
-        console.log('previous image', image_url)
         await modifyImage(userPrompt, image_url);
         break;
     }
@@ -93,11 +90,12 @@ export default function Home() {
   // open the Play AI embed
   useEffect(() => {
     // @ts-ignore
+    // open the embed, passing in the events and event handler you've defined
     windowObj?.PlayAI?.open(webEmbedId, { events, onEvent })
   }, [windowObj])
   
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap p-24">
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <script type="text/javascript" src={scriptUrl} async></script>
       <Image src={image ?? "/playcube.svg"} alt="Generated Image" width={image ? 500 : 300} height={image ? 500 : 300} />
      {/* <button className="bg-blue-500 text-white p-2 rounded-md" onClick={async () => generateImage('a brown dog')}>Test Fal API</button> */}
