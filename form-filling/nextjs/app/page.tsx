@@ -68,6 +68,8 @@ export default function Home() {
     )}. Call "update-form-field" IMMEDIATELY after the value for a form field is given.`;
 
   // Define your event handler here
+  // Note: Currently, references to state variables are not updated in this function call,
+  // i.e. if you use a state variable like formValues, it will show the initial value instead of the updated value
   const onEvent = (event: any) => {
     if (event.name === "update-form-field") {
       const value =
@@ -88,6 +90,7 @@ export default function Home() {
     console.log("EVENT: ", event);
   };
 
+  // Initialize the PlayAI web embed
   useEffect(() => {
     window?.PlayAI.open(webEmbedId, {
       events,
