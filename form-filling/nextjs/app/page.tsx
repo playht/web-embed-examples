@@ -18,28 +18,25 @@ const webEmbedId = "LWI1mKeYlokyznhg56dV-";
  * END THE CALL IMMEDIATELY.
  */
 
-let globalFormValues: Record<string, { value: any }> = {};
-
 export default function Home() {
+  // Define the form fields
   const formFields = [
     { key: "name", label: "Name", type: "text", argType: "string" },
     { key: "age", label: "Age", type: "text", argType: "number" },
     { key: "hobbies", label: "Hobbies", type: "text", argType: "string" },
   ];
 
+  // Initialize formValues based on formFields
   const [formValues, setFormValues] =
     useState<Record<string, { value: any }>>();
   useEffect(() => {
-    // Initializes formValues based on formFields
     const initialFormValues = {} as Record<string, { value: any }>;
     formFields.forEach((field) => {
       if (field.type === "text") {
         initialFormValues[field.key] = { value: "" };
       }
     });
-
     setFormValues(initialFormValues);
-    globalFormValues = initialFormValues;
   }, []);
 
   // Define your events here
@@ -63,6 +60,7 @@ export default function Home() {
     },
   ];
 
+  // Give the agent the list of form fields as context
   const context = `Here is a list of form fields: ${formFields
     .map((field) => `${field.key} (${field.argType})`)
     .join(
@@ -77,14 +75,15 @@ export default function Home() {
           ? event.parameters.value
           : event.parameters.numberValue;
 
-      const newFormValues = {
-        ...globalFormValues,
-        [event.parameters.key]: {
-          value,
-        },
-      };
-      setFormValues(newFormValues);
-      globalFormValues = newFormValues;
+      // Update the form values
+      setFormValues((oldFormValues) => {
+        return {
+          ...oldFormValues,
+          [event.parameters.key]: {
+            value,
+          },
+        };
+      });
     }
     console.log("EVENT: ", event);
   };
