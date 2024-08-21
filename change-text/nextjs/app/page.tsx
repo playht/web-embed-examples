@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { open as openEmbed } from "@play-ai/web-embed";
 
-// const webEmbedSrc = "https://cdn.jsdelivr.net/npm/play-ai-embed";
-const webEmbedSrc = "http://localhost:4304/index.js";
-const webEmbedId = "VQkN5p1ijeXxXeGrjx6ZL";
+const webEmbedId = "EJI3iftilUhHESLpMG9EC";
 
 /*
  * [Agent Greeting]
@@ -23,9 +22,8 @@ export default function Home() {
   const events = [
     {
       name: "change-text",
-      description:
-        "This function is called with a string representing the text to change to",
-      parameters: {
+      when: "This function is called with a string representing the text to change to",
+      data: {
         text: { type: "string", description: "The text to change to" },
       },
     },
@@ -34,21 +32,18 @@ export default function Home() {
   // Define your event handler here
   const onEvent = (event: any) => {
     if (event.name === "change-text") {
-      setText(event.parameters.text);
+      setText(event.data.text);
     }
     console.log("EVENT: ", event);
   };
 
   useEffect(() => {
-    window?.PlayAI.open(webEmbedId, { events, onEvent });
-    // window?.PlayAI.open(webEmbedId);
-  }, [() => window]);
+    openEmbed(webEmbedId, { events, onEvent });
+  }, []);
 
   return (
     <>
       {/* Include play web embed library */}
-      <script type="text/javascript" src={webEmbedSrc} async />
-
       <div className="flex justify-center items-center h-[70vh]">
         <div className="font-medium text-2xl">{text}</div>
       </div>
