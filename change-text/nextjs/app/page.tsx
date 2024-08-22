@@ -22,7 +22,7 @@ export default function Home() {
   const events = [
     {
       name: "change-text",
-      when: "This function is called with a string representing the text to change to",
+      when: "The user says what they want to change the text on the screen to",
       data: {
         text: { type: "string", description: "The text to change to" },
       },
@@ -43,7 +43,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Include play web embed library */}
       <div className="flex justify-center items-center h-[70vh]">
         <div className="font-medium text-2xl">{text}</div>
       </div>

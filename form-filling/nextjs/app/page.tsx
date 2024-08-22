@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { open as openEmbed } from "@play-ai/web-embed";
 
-// const webEmbedSrc = "https://cdn.jsdelivr.net/npm/play-ai-embed";
-const webEmbedSrc = "http://localhost:4304/index.js";
-const webEmbedId = "LWI1mKeYlokyznhg56dV-";
+const webEmbedId = "8_SaHYRigFrzZ5VDD4SOy";
 
 /*
  * [Agent Greeting]
@@ -61,8 +60,8 @@ export default function Home() {
   const events = [
     {
       name: "update-form-field",
-      description: `Updates a form field on the page`,
-      parameters: {
+      when: `The user gives a value for a form field`,
+      data: {
         key: { type: "string", description: "The form field to update" },
         type: {
           type: "string",
@@ -88,28 +87,26 @@ export default function Home() {
     },
   ];
 
-  // Give the agent the list of form fields as context
-  const context = `This form is for a restaurant review. Here is a list of form fields: ${formFields
+  // Give the agent the list of form fields as a prompt
+  const prompt = `This form is for a restaurant review. Here is a list of form fields: ${formFields
     .map((field) => `${field.key} (${field.argType})`)
     .join(
       ", "
     )}. Call "update-form-field" IMMEDIATELY after the value for a form field is given.`;
 
   // Define your event handler here
-  // Note: Currently, references to state variables are not updated in this function call,
-  // i.e. if you use a state variable like formValues, it will show the initial value instead of the updated value
   const onEvent = (event: any) => {
     if (event.name === "update-form-field") {
       let value = "";
-      switch (event.parameters.type) {
+      switch (event.data.type) {
         case "string":
-          value = event.parameters.stringValue;
+          value = event.data.stringValue;
           break;
         case "number":
-          value = event.parameters.numberValue;
+          value = event.data.numberValue;
           break;
         case "boolean":
-          value = event.parameters.booleanValue;
+          value = event.data.booleanValue;
           break;
       }
 
@@ -117,7 +114,7 @@ export default function Home() {
       setFormValues((oldFormValues) => {
         return {
           ...oldFormValues,
-          [event.parameters.key]: {
+          [event.data.key]: {
             value,
           },
         };
@@ -128,18 +125,15 @@ export default function Home() {
 
   // Initialize the PlayAI web embed
   useEffect(() => {
-    window?.PlayAI.open(webEmbedId, {
+    openEmbed(webEmbedId, {
       events,
       onEvent,
-      context,
+      prompt,
     });
-  }, [() => window]);
+  }, []);
 
   return (
     <>
-      {/* Include play web embed library */}
-      <script type="text/javascript" src={webEmbedSrc} async />
-
       {formValues && (
         <div className="flex justify-center items-center h-[70vh]">
           <div className="flex flex-col gap-4 m-4 w-full sm:w-96 items-stretch">
