@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { open as openEmbed } from "@play-ai/web-embed";
 
+// Replace with your web embed ID
 const webEmbedId = "8_SaHYRigFrzZ5VDD4SOy";
 
 /*
@@ -85,7 +86,7 @@ export default function Home() {
         },
       },
     },
-  ];
+  ] as const;
 
   // Give the agent the list of form fields as a prompt
   const prompt = `This form is for a restaurant review. Here is a list of form fields: ${formFields
@@ -96,6 +97,7 @@ export default function Home() {
 
   // Define your event handler here
   const onEvent = (event: any) => {
+    console.log("onEvent: ", event);
     if (event.name === "update-form-field") {
       let value = "";
       switch (event.data.type) {
@@ -120,7 +122,6 @@ export default function Home() {
         };
       });
     }
-    console.log("EVENT: ", event);
   };
 
   // Initialize the PlayAI web embed
@@ -160,7 +161,7 @@ export default function Home() {
                         className="w-full border border-gray-300 p-2 rounded-md"
                         id={field.key}
                         type={field.type}
-                        value={formValues[field.key].value}
+                        value={formValues[field.key]?.value}
                         onChange={(e) => {
                           setFormValues({
                             ...formValues,
@@ -177,7 +178,7 @@ export default function Home() {
                       <textarea
                         className="w-full border border-gray-300 p-2 rounded-md"
                         id={field.key}
-                        value={formValues[field.key].value}
+                        value={formValues[field.key]?.value}
                         onChange={(e) => {
                           setFormValues({
                             ...formValues,
@@ -193,7 +194,7 @@ export default function Home() {
                       <input
                         id={field.key}
                         type="checkbox"
-                        checked={formValues[field.key].value}
+                        checked={formValues[field.key]?.value}
                         onChange={(e) => {
                           setFormValues({
                             ...formValues,

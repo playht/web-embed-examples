@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { open as openEmbed } from "@play-ai/web-embed";
 
+// Replace with your web embed ID
 const webEmbedId = "EJI3iftilUhHESLpMG9EC";
 
 /*
@@ -27,14 +28,14 @@ export default function Home() {
         text: { type: "string", description: "The text to change to" },
       },
     },
-  ];
+  ] as const;
 
   // Define your event handler here
   const onEvent = (event: any) => {
+    console.log("onEvent: ", event);
     if (event.name === "change-text") {
       setText(event.data.text);
     }
-    console.log("EVENT: ", event);
   };
 
   useEffect(() => {
